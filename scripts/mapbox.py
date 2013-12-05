@@ -7,17 +7,7 @@ import shapefile
 from shapely.geometry import Polygon
 from shapely.geos import PredicateError
 
-state_fips = {
-    '01': 'al', '02': 'ak', '04': 'az', '05': 'ar', '06': 'ca', '08': 'co',
-    '09': 'ct', '10': 'de', '11': 'dc', '12': 'fl', '13': 'ga', '15': 'hi',
-    '16': 'id', '17': 'il', '18': 'in', '19': 'ia', '20': 'ks', '21': 'ky',
-    '22': 'la', '23': 'me', '24': 'md', '25': 'ma', '26': 'mi', '27': 'mn',
-    '28': 'ms', '29': 'mo', '30': 'mt', '31': 'ne', '32': 'nv', '33': 'nh',
-    '34': 'nj', '35': 'nm', '36': 'ny', '37': 'nc', '38': 'nd', '39': 'oh',
-    '40': 'ok', '41': 'or', '42': 'pa', '44': 'ri', '45': 'sc', '46': 'sd',
-    '47': 'tn', '48': 'tx', '49': 'ut', '50': 'vt', '51': 'va', '53': 'wa',
-    '54': 'wv', '55': 'wi', '56': 'wy', '72': 'pr'
-}
+from shapefiles.definitions import STATE_FIPS
 
 
 def generate_mss(mss_id, shpfile, selector=None):
@@ -25,10 +15,10 @@ def generate_mss(mss_id, shpfile, selector=None):
 
     # find the position of the selector in fields
     candidate_selectors = (selector,) if selector else ('SLDLST', 'SLDUST')
-    for fpos, f in enumerate(shp.fields):
-        if f[0] in candidate_selectors:
+    for fpos, field in enumerate(shp.fields):
+        if field[0] in candidate_selectors:
             # the selector pos is 1 less than the pos in fields
-            selector = f[0]
+            selector = field[0]
             spos = fpos - 1
 
     # create dict of selectors to polygons
@@ -70,7 +60,7 @@ def generate_mss(mss_id, shpfile, selector=None):
             # pick a color that matches
             proposed_color = None
             if len(disallowed_colors) == 10:
-                print "couldn't color", name1
+                print ("couldn't color", name1)
                 is_well_colored = False
                 break
             else:
@@ -117,7 +107,7 @@ def generate_mml(shpfile, state=None, chamber=None, selector=None):
 
     # figure out state from FIPS code in a record
     if not state and shp.fields[1][0] == 'STATEFP':
-        state = state_fips[shp.record(0)[0]]
+        state = STATE_FIPS[shp.record(0)[0]]
 
     projname = state + chamber
 
@@ -144,7 +134,11 @@ def generate_mml(shpfile, state=None, chamber=None, selector=None):
     open(os.path.join('project', projname, 'style.mss'), 'w').write(mss)
 
 
-import sys
-arg = sys.argv[1]
-generate_mml('shapefiles/sldl/PVS_12_v2_sldl_%s.shp' % arg)
-generate_mml('shapefiles/sldu/PVS_12_v2_sldu_%s.shp' % arg)
+def main ():
+    arg = sys.argv[1]
+    generate_mml('shapefiles/sldl/PVS_12_v2_sldl_%s.shp' % arg)
+    generate_mml('shapefiles/sldu/PVS_12_v2_sldu_%s.shp' % arg)
+
+
+if __name__ == "__main__":
+    main()

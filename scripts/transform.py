@@ -1,3 +1,6 @@
+u'''
+processing of shapefiles
+'''
 import shapefile
 
 def transform_file(filename, state, chamber, id_field, name_field):
@@ -27,6 +30,6 @@ def transform_file(filename, state, chamber, id_field, name_field):
     shp.save('newshapefiles/{state}-{chamber}'.format(state=state,
                                                       chamber=chamber))
 
-
-transform_file('rawshapefiles/SB1_Reengrossed', 'la', 'upper', 'DISTRICT_I',
+if __name__ == "__main__":
+    transform_file('rawshapefiles/SB1_Reengrossed', 'la', 'upper', 'DISTRICT_I',
                'NAME')

@@ -6,7 +6,7 @@ from datetime import date
 import boundaries
 
 
-state_fips = {
+STATE_FIPS = {
     '01': 'al', '02': 'ak', '04': 'az', '05': 'ar', '06': 'ca', '08': 'co',
     '09': 'ct', '10': 'de', '11': 'dc', '12': 'fl', '13': 'ga', '15': 'hi',
     '16': 'id', '17': 'il', '18': 'in', '19': 'ia', '20': 'ks', '21': 'ky',
@@ -21,8 +21,6 @@ state_fips = {
 
 
 def tiger_namer(feature):
-    global OGRIndexError
-    global state_fips
 
     try:
         fips_code = feature.get('STATEFP')
@@ -39,7 +37,7 @@ def tiger_namer(feature):
     except OGRIndexError:
         geoid = feature.get('GEOID10')
 
-    state_abbrev = state_fips[fips_code].upper()
+    state_abbrev = STATE_FIPS[fips_code].upper()
     name = name.encode('utf8').decode('latin-1')
     resp = u"{0} {1} {2}".format(state_abbrev, name, geoid)
     return resp
